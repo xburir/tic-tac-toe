@@ -105,6 +105,13 @@
             document.getElementById('current-player').innerText = `Player on move: ${currentPlayer}`;
         });
 
+    socket.on('player_left', function(data) {
+            document.getElementById('winner-text').innerText = `The other player left the game`;
+            document.getElementById('myModal').style.display = 'block';
+            document.getElementById('board').style.display = 'none';
+            socket.disconnect();
+        });
+
     socket.on('game_start', function(data) {
             document.getElementById('myModal').style.display = 'none';
             socket.emit('update_board', {'index': -1});  // Send a special index to indicate a reset

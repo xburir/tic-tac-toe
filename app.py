@@ -11,7 +11,6 @@ CONNECT_TO_WIN = 5
 initial_board = [[""] * GRID_SIZE for _ in range(GRID_SIZE)]
 current_player = "X"
 
-## TODO-riso ked sa player 2 refreshne tak to vymaze cely board a pokrauje player 2, treba dat oznam ze sa odhlasil a znova spustit hru
 
 @app.route('/')
 def index():
@@ -28,21 +27,21 @@ def handle_connect():
         else:
             connected = list(connected_players.keys())[0]
             connected_players[player_id] = 'O' if connected_players[connected] == 'X' else 'X'
-            emit('current_player', {'current_player': current_player}, broadcast=True)  # Send current player information
+            emit('current_player', {'current_player': current_player}, broadcast=True)
             emit('game_start', {}, broadcast=True)  # Send current player information
 
         emit('player_role', {'role': connected_players[player_id]}, room=player_id)
 
     else:
+        emit('game_full', {}, room=player_id)  # Send current player information
         print(f"too many players {len(connected_players)}")
 
 
 
 @socketio.on('disconnect')
 def handle_disconnect():
-    player_id = request.sid
-    if player_id in connected_players:
-        del connected_players[player_id]
+    emit('player_left', {}, broadcast=True)
+    connected_players.clear()
 
 
 @socketio.on('update_board')
@@ -58,7 +57,7 @@ def handle_update_board(data):
 
     if index == -1:  # Special value for game reset
         initial_board = [[""] * GRID_SIZE for _ in range(GRID_SIZE)]
-        current_player = 'X' ##TODO-riso toto mozno zmenit este
+        current_player = 'X'
     else:
         row = index // GRID_SIZE
         col = index % GRID_SIZE
