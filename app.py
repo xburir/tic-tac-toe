@@ -3,8 +3,7 @@ from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
 socketio = SocketIO(app)
-connected_players = set()
-player_roles = {}  # Dictionary to store player roles
+connected_players = {}
 GRID_SIZE = 15
 CONNECT_TO_WIN = 5
 
@@ -25,18 +24,16 @@ def index():
 def handle_connect():
     player_id = request.sid
     if len(connected_players) < 2:
-        connected_players.add(player_id)
 
-        if player_id not in player_roles:
-            if len(player_roles) % 2 == 0:
-                player_roles[player_id] = 'X'
-            else:
-                player_roles[player_id] = 'O'
+        if len(connected_players) == 0:
+            connected_players[player_id] = 'O'
+        else:
+            connected = list(connected_players.keys())[0]
+            connected_players[player_id] = 'O' if connected_players[connected] == 'X' else 'X'
+            emit('current_player', {'current_player': current_player}, broadcast=True)  # Send current player information
 
-        current_player = player_roles[player_id]
+        emit('player_role', {'role': connected_players[player_id]}, room=player_id)
 
-        emit('player_role', {'role': player_roles[player_id]}, room=player_id)
-        emit('current_player', {'current_player': current_player}, broadcast=True)  # Send current player information
     else:
         print(f"too many players {len(connected_players)}")
 
@@ -45,8 +42,7 @@ def handle_connect():
 @socketio.on('disconnect')
 def handle_disconnect():
     player_id = request.sid
-    del player_roles[player_id]
-    connected_players.discard(player_id)
+    del connected_players[player_id]
 
 
 @socketio.on('update_board')
@@ -62,7 +58,7 @@ def handle_update_board(data):
 
     if index == -1:  # Special value for game reset
         initial_board = [[""] * GRID_SIZE for _ in range(GRID_SIZE)]
-        current_player = player_roles[player_id]
+        current_player = 'X' ##TODO-riso toto mozno zmenit este
     else:
         row = index // GRID_SIZE
         col = index % GRID_SIZE
@@ -74,9 +70,6 @@ def handle_update_board(data):
 
     winner = check_winner()
     emit('board_updated', {'board': initial_board, 'current_player': current_player, 'winner': winner}, broadcast=True)
-    # flattened_board = [cell for row in initial_board for cell in row]
-    # emit('board_updated', {'board': flattened_board, 'current_player': current_player, 'winner': None}, room=player_id)
-
     emit('current_player', {'current_player': current_player}, broadcast=True)  # Send current player information
 
 
