@@ -53,7 +53,7 @@
     <div id="player-id"></div>
     <div id="player-info"></div>
     <div id="current-player"></div>
-    <table id="board">
+    <table id="board" style="display: none">
         {% for row in range(15) %}
             <tr>
                 {% for col in range(15) %}
@@ -69,7 +69,7 @@
     <div id="myModal">
         <div id="myModal-content">
             <p id="winner-text"></p>
-            <button onclick="resetGame()">Play Again</button>
+            <button onclick="reload()">Play Again</button>
         </div>
     </div>
 
@@ -107,12 +107,19 @@
             document.getElementById('current-player').innerText = `Player on move: ${currentPlayer}`;
         });
 
+    socket.on('game_start', function(data) {
+            document.getElementById('myModal').style.display = 'none';
+            socket.emit('update_board', {'index': -1});  // Send a special index to indicate a reset
+            document.getElementById('board').style.display = '';
+        });
+
     socket.on('board_updated', function(data) {
         updateUI(data.board, data.current_player);
 
         if (data.winner) {
             document.getElementById('winner-text').innerText = `Player ${data.winner} wins!`;
             document.getElementById('myModal').style.display = 'block';
+            document.getElementById('board').style.display = 'none';
         }
     });
 
@@ -128,9 +135,8 @@
         // You can add styling or update the UI based on the current player, game state, etc.
     }
 
-    function resetGame() {
-        document.getElementById('myModal').style.display = 'none';
-        socket.emit('update_board', {'index': -1});  // Send a special index to indicate a reset
+    function reload() {
+        location.reload();
     }
 
     // Close the modal if the user clicks anywhere outside of it
@@ -138,6 +144,7 @@
         const modal = document.getElementById('myModal');
         if (event.target === modal) {
             modal.style.display = 'none';
+            reload()
         }
     };
 </script>
