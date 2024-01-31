@@ -50,7 +50,6 @@
 </head>
 <body>
     <h1>Tic Tac Toe</h1>
-    <div id="player-id"></div>
     <div id="player-info"></div>
     <div id="current-player"></div>
     <table id="board" style="display: none">
@@ -77,14 +76,13 @@
     // Connect to the Socket.IO server
     const socket = io.connect();
 
-    let playerId;
     let playerRole;
     let currentPlayer;
 
     // Add your JavaScript code here
     function playMove(index) {
 
-       if (!playerId || playerRole !== currentPlayer) {
+       if (playerRole !== currentPlayer) {
             alert("You are not allowed to make a move.  "+currentPlayer+" is on the move");
             return;
         }
@@ -97,10 +95,10 @@
             document.getElementById('player-info').innerText = `Playing as ${playerRole}`;
         });
 
-    socket.on('connect', function() {
-        playerId = socket.id;
-        document.getElementById('player-id').innerText = `PlayerID ${playerId}`;
-    });
+    socket.on('game_full', function(data) {
+        alert("Game is full");
+        });
+
 
     socket.on('current_player', function(data) {
             currentPlayer = data.current_player;
