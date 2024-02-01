@@ -4,7 +4,7 @@ const app=express()
 const path=require("path")
 const http=require("http")
 const {Server}=require("socket.io")
-
+const port = process.env.PORT || 3000;
 
 const server=http.createServer(app)
 
@@ -85,6 +85,6 @@ app.get("/",(req,res)=>{
     return res.sendFile("index.html")
 })
 
-server.listen(3000,()=>{
-    console.log("port connected to 3000")
+server.listen(port,()=>{
+    console.log("port connected to "+port)
 })
