@@ -150,7 +150,7 @@
         });
 
     socket.on('board_updated', function(data) {
-        updateUI(data.board, data.current_player);
+        updateUI(data.board, data.current_player, data.move);
 
         if (data.winner) {
             document.getElementById('winner-text').innerText = `Player ${data.winner} wins!`;
@@ -186,12 +186,17 @@
         }
     }
 
-    function updateUI(board, currentPlayer) {
+    function updateUI(board, currentPlayer,move) {
         const cells = document.querySelectorAll('.cell');
         for (let row = 0; row < 15; row++) {
             for (let col = 0; col < 15; col++) {
                 const index = row * 15 + col;
                 let img = cells[index].lastChild
+                if (index == move){
+                    cells[index].style.setProperty('background-color', '#6ab36a');
+                }else{
+                    cells[index].style.removeProperty('background-color')
+                }
                 if (board[row][col] === 'X'){
                     img.src = './img/x/x_no_bg.png';
                 }

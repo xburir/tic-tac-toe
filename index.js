@@ -89,7 +89,8 @@ io.on("connection",(socket)=>{
         io.emit('board_updated', {
             board: initial_board,
             current_player: current_player,
-            winner: winner
+            winner: winner,
+            move: index
         }); // Broadcast to all connected clients
     
         io.emit('current_player', {
