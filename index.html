@@ -9,6 +9,13 @@
 </head>
 
 <style>
+
+    body{
+            
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
     /* Add your CSS styles here */
     table {
         border-collapse: collapse;
@@ -18,15 +25,14 @@
         border: 1px solid black;
     }
 
-    th, td {
-        width: 30px;
-        height: 30px;
-        text-align: center;
-        font-size: 15px;
-    }
 
     .cell {
         cursor: pointer;
+    }
+
+    .cell > img{
+        height: 40px;
+        width: 40px;
     }
 
     #myModal {
@@ -50,6 +56,39 @@
         border: 1px solid #888;
         width: 80%;
     }
+
+    @media only screen and (max-width: 700px) {
+    .cell > img{
+        width: 35px;
+        height: 35px;
+    }}
+
+    @media only screen and (max-width: 620px) {
+    .cell > img{
+        width: 30px;
+        height: 30px;
+    }}
+
+    @media only screen and (max-width: 550px) {
+    .cell > img{
+        width: 25px;
+        height: 25px;
+    }}
+    @media only screen and (max-width: 470px) {
+    .cell > img{
+        width: 25px;
+        height: 25px;
+    }}
+    @media only screen and (max-width: 470px) {
+    .cell > img{
+        width: 25px;
+        height: 25px;
+    }}
+    @media only screen and (max-width: 430px) {
+    .cell > img{
+        width: 15px;
+        height: 15px;
+    }}
 </style>
 
 <body>
@@ -57,6 +96,7 @@
     <h1>Tic-Tac-Toe</h1>
     <div id="player-info"></div>
     <div id="current-player"></div>
+    <br><br>
     <table id="board" style="display: none">
        
     </table>
@@ -136,7 +176,9 @@
             for (let j = 0; j < 15; j++) {
                 let cell = row.insertCell();
                 cell.classList.add('cell');
-                cell.textContent = ''; 
+                let img = document.createElement('img');
+                img.src = './img/empty.png';
+                cell.appendChild(img)
                 cell.addEventListener("click",function(){
                     playMove(i*15 + j)
                 })
@@ -149,7 +191,17 @@
         for (let row = 0; row < 15; row++) {
             for (let col = 0; col < 15; col++) {
                 const index = row * 15 + col;
-                cells[index].innerText = board[row][col];
+                let img = cells[index].lastChild
+                if (board[row][col] === 'X'){
+                    img.src = './img/x/x_no_bg.png';
+                }
+                else if (board[row][col] === 'O'){
+                    img.src = './img/o/o_no_bg.png';
+                }
+                else{
+                    img.src = './img/empty.png';
+                }
+                
             }
         }
 
